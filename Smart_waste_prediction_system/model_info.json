@@ -1,0 +1,25 @@
+{
+    "model_name": "Linear Regression",
+    "mae": 23.99,
+    "rmse": 29.04,
+    "r2": 0.815,
+    "features": [
+        "Festival",
+        "Expected_Customers",
+        "Previous_Day_Consumption",
+        "Previous_Week_Same_Day",
+        "Day_Friday",
+        "Day_Monday",
+        "Day_Saturday",
+        "Day_Sunday",
+        "Day_Thursday",
+        "Day_Tuesday",
+        "Day_Wednesday",
+        "Weather_Encoded",
+        "Is_Weekend",
+        "Weather_Festival",
+        "Customer_Level_Low",
+        "Customer_Level_Medium",
+        "Customer_Level_High"
+    ]
+}

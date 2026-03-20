@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Food Waste Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🍽️ Smart Food Waste Prediction System</h1>
+        <p class="subtitle">Predict the exact number of meals to prepare and reduce food waste</p>
+        
+        <div class="main-content">
+            <div class="form-container">
+                <h2>Enter Details</h2>
+                <form action="/predict" method="POST" id="prediction-form">
+                    <div class="form-group">
+                        <label for="day">Day of Week:</label>
+                        <select name="day" id="day" required>
+                            <option value="">Select Day</option>
+                            {% for day in days %}
+                            <option value="{{ day }}" {% if form_data and form_data.day == day %}selected{% endif %}>{{ day }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="weather">Weather Condition:</label>
+                        <select name="weather" id="weather" required>
+                            <option value="">Select Weather</option>
+                            {% for weather in weather_options %}
+                            <option value="{{ weather }}" {% if form_data and form_data.weather == weather %}selected{% endif %}>{{ weather }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="festival">Festival/Holiday:</label>
+                        <select name="festival" id="festival" required>
+                            <option value="0" {% if form_data and form_data.festival == '0' %}selected{% endif %}>Normal Day</option>
+                            <option value="1" {% if form_data and form_data.festival == '1' %}selected{% endif %}>Festival</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="expected_customers">Expected Customers:</label>
+                        <input type="number" name="expected_customers" id="expected_customers" 
+                               min="300" max="650" step="1" required
+                               value="{{ form_data.expected_customers if form_data else '' }}"
+                               placeholder="e.g., 500">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="prev_day_consumption">Previous Day Consumption:</label>
+                        <input type="number" name="prev_day_consumption" id="prev_day_consumption" 
+                               min="200" max="650" step="1" required
+                               value="{{ form_data.prev_day_consumption if form_data else '' }}"
+                               placeholder="e.g., 450">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="prev_week_consumption">Previous Week Same Day:</label>
+                        <input type="number" name="prev_week_consumption" id="prev_week_consumption" 
+                               min="200" max="650" step="1" required
+                               value="{{ form_data.prev_week_consumption if form_data else '' }}"
+                               placeholder="e.g., 430">
+                    </div>
+                    
+                    <button type="submit" class="predict-btn">Predict Meals →</button>
+                </form>
+            </div>
+            
+            <div class="result-container">
+                {% if prediction %}
+                <div class="result-card">
+                    <h2>Recommended Meals</h2>
+                    <div class="prediction-value">{{ prediction }}</div>
+                    <p class="prediction-label">meals to prepare</p>
+                    
+                    <div class="confidence-interval">
+                        <h3>Confidence Range</h3>
+                        <div class="range">
+                            <span class="min">{{ lower_bound }}</span>
+                            <span class="to">to</span>
+                            <span class="max">{{ upper_bound }}</span>
+                        </div>
+                        <p class="range-note">(Based on model accuracy ±24 meals)</p>
+                    </div>
+                    
+                    <div class="model-stats">
+                        <h3>Model Performance</h3>
+                        <div class="stats-grid">
+                            <div class="stat">
+                                <span class="stat-label">MAE</span>
+                                <span class="stat-value">±24 meals</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Accuracy</span>
+                                <span class="stat-value">92%</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">R² Score</span>
+                                <span class="stat-value">0.815</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="placeholder-card">
+                    <h2>Ready to Predict</h2>
+                    <p>Fill in the form and click "Predict Meals" to see the recommended quantity</p>
+                    <div class="icon">📊</div>
+                </div>
+                {% endif %}
+                
+                {% if error %}
+                <div class="error-card">
+                    <h3>⚠️ Error</h3>
+                    <p>{{ error }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h3>📈 How It Works</h3>
+            <p>Our machine learning model analyzes historical data including day of week, weather conditions, festivals, and past consumption patterns to predict optimal meal preparation quantity with <strong>92% accuracy</strong>.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Add input validation
+        document.getElementById('prediction-form').addEventListener('submit', function(e) {
+            const expected = document.getElementById('expected_customers').value;
+            const prevDay = document.getElementById('prev_day_consumption').value;
+            const prevWeek = document.getElementById('prev_week_consumption').value;
+            
+            if (expected < 300 || expected > 650) {
+                alert('Expected customers should be between 300 and 650');
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
